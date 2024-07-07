@@ -1,0 +1,114 @@
+Configuração do Ambiente
+
+Instalação das Ferramentas Necessárias
+
+Para desenvolver um carrinho de compras funcional em Rust usando o framework web Rocket, você precisará das seguintes ferramentas:
+
+Rust
+Cargo
+Configuração do Ambiente de Desenvolvimento
+
+Para configurar seu ambiente de desenvolvimento, execute o seguinte comando:
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+Criação do Projeto Rocket
+
+Inicialização do Projeto
+
+Para criar um novo projeto Rust usando Cargo, execute os seguintes comandos:
+
+cargo new rust_shopping_cart
+cd rust_shopping_cart
+Adição do Rocket como Dependência
+
+Adicione o Rocket como uma dependência no arquivo Cargo.toml:
+
+[dependencies]
+rocket = "0.5.0-rc.1"
+Estrutura do Projeto
+
+Organize seu projeto em módulos para facilitar a manutenção e escalabilidade:
+
+src/
+main.rs: Ponto de entrada da aplicação Rocket.
+routes/: Módulo para definir as rotas da aplicação.
+models/: Definição de estruturas de dados (por exemplo, para produtos e carrinho).
+services/: Lógica de negócios e serviços relacionados ao carrinho.
+Implementação do Carrinho de Compras
+
+Definição das Rotas com Rocket
+
+No arquivo main.rs, configure as rotas principais usando Rocket:
+
+#[macro_use] extern crate rocket;
+
+mod routes;
+mod models;
+mod services;
+
+#[rocket::main]
+async fn main() {
+    rocket::build()
+        .mount("/", routes![
+            routes::get_cart,
+            routes::add_to_cart,
+            routes::remove_from_cart,
+        ])
+        .launch()
+        .await
+        .expect("Failed to launch Rocket application.");
+}
+Definição das Estruturas de Dados (Models)
+
+Crie estruturas de dados simples para representar produtos e o carrinho de compras em models/cart.rs:
+
+pub struct Product {
+    pub id: u32,
+    pub name: String,
+    pub price: f32,
+}
+
+pub struct CartItem {
+    pub product: Product,
+    pub quantity: u32,
+}
+
+pub struct ShoppingCart {
+    pub items: Vec<CartItem>,
+    pub total: f32,
+}
+Implementação das Rotas (Routes)
+
+Defina as rotas em routes/cart.rs para manipular o carrinho de compras:
+
+use rocket::{get, post, delete};
+use rocket::serde::json::Json;
+use crate::models::{Product, CartItem, ShoppingCart};
+
+#[get("/cart")]
+pub async fn get_cart() -> Json<ShoppingCart> {
+    // Implementação para retornar o carrinho de compras
+}
+
+#[post("/cart/add/<product_id>")]
+pub async fn add_to_cart(product_id: u32) -> Json<ShoppingCart> {
+    // Implementação para adicionar um produto ao carrinho
+}
+
+#[delete("/cart/remove/<product_id>")]
+pub async fn remove_from_cart(product_id: u32) -> Json<ShoppingCart> {
+    // Implementação para remover um produto do carrinho
+}
+Implementação da Lógica de Negócios (Services)
+
+Crie funções em services/cart.rs para manipular o carrinho de compras:
+
+use crate::models::{Product, CartItem, ShoppingCart};
+
+pub fn add_product_to_cart(cart: &mut ShoppingCart, product: &Product, quantity: u32) {
+    // Implementação para adicionar um produto ao carrinho
+}
+
+pub fn remove_product_from_cart(cart: &mut ShoppingCart, product_id: u32) {
+    // Implementação para remover um produto do carrinho
+}
